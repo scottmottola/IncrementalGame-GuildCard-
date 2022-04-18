@@ -3,17 +3,20 @@ using UnityEngine.UI;
 
 public class IdleGame : MonoBehaviour
 {
-
+    //Variables
+    //Basic EXP
     public Text expText;
     public Text expPerSecText;
     public double exp;
     public double expPerSec;
+
+    //Quest
+    public Text questText;
     public double questValue;
 
-    public Text questText;
+    //Upgrade text
     public Text questUpgrade1Text;
     public Text repeatMissionUpgrade1Text;
-
     public Text questUpgrade2Text;
     public Text repeatMissionUpgrade2Text;
 
@@ -31,6 +34,7 @@ public class IdleGame : MonoBehaviour
     public double repeatMissionUpgrade2Power;
     public int repeatMissionUpgrade2Level;
 
+    //Generation
     public Text generationText;
     public Text generationTalentText;
     public Text generationBoostText;
@@ -41,21 +45,22 @@ public class IdleGame : MonoBehaviour
     public double generationBoost;
     public double nextGenerationTalentIncrease;
 
+    //Progress Bars
+    public Image questUpgrade1Bar;
+    public Image repeatMissionUpgrade1Bar;
+    public Image questUpgrade2Bar;
+    public Image repeatMissionUpgrade2Bar;
+    public Image generationBar;
 
+
+    //Functions
+    //Basic Functions
     public void Start()
     {
-        exp = 0;
-        questValue = 1;
-        questUpgrade1Cost = 25;
-        repeatMissionUpgrade1Cost = 100;
-        questUpgrade2Cost = 120;
-        repeatMissionUpgrade2Cost = 550;
-
-        questUpgrade2Power = 5;
-        repeatMissionUpgrade2Power = 5;
-
+        //Load/Create Start Values
         Load();
 
+        //Text Fields
         if (questUpgrade1Cost > 1000)
         {
             var sciNotation = ScientificNotation(questUpgrade1Cost);
@@ -90,6 +95,56 @@ public class IdleGame : MonoBehaviour
             repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + repeatMissionUpgrade2Cost.ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
     }
 
+    public void Update()
+    {
+        //Values that change frequently
+        nextGenerationTalentIncrease = (150 * System.Math.Sqrt(exp / 1e7));
+        nextGenerationIncreaseText.text = "Teach:\n+" + System.Math.Floor(nextGenerationTalentIncrease).ToString("F0") + " Talents";
+        generationText.text = "Generation: " + generation;
+        generationBoostText.text = generationBoost.ToString("F2") + "X Boost";
+        generationTalentText.text = "Talents: " + System.Math.Floor(generationTalents).ToString("F0");
+
+        expPerSec = (repeatMissionUpgrade1Level + (repeatMissionUpgrade2Power * repeatMissionUpgrade2Level)) * generationBoost;
+
+        //Text Fields
+        if (questValue > 1000)
+        {
+            var sciNotation = ScientificNotation(questValue);
+            questText.text = "Quest: +" + sciNotation + " EXP";
+        }
+        else
+            questText.text = "Quest: +" + questValue.ToString("F2") + " EXP";
+
+        if (exp > 1000)
+        {
+            var sciNotation = ScientificNotation(exp);
+            expText.text = "EXP: " + sciNotation;
+        }
+        else
+            expText.text = "EXP: " + exp.ToString("F0");
+
+        if (expPerSec > 1000)
+        {
+            var sciNotation = ScientificNotation(expPerSec);
+            expPerSecText.text = sciNotation + " EXP/s";
+        }
+        else
+            expPerSecText.text = expPerSec.ToString("F2") + " EXP/s";
+
+        exp += expPerSec * Time.deltaTime;
+
+        //Progress Bars
+        ProgressBar(questUpgrade1Bar, exp, questUpgrade1Cost);
+        ProgressBar(repeatMissionUpgrade1Bar, exp, repeatMissionUpgrade1Cost);
+        ProgressBar(questUpgrade2Bar, exp, questUpgrade2Cost);
+        ProgressBar(repeatMissionUpgrade2Bar, exp, repeatMissionUpgrade2Cost);
+        ProgressBar(generationBar, exp, 1000);
+
+        //Save Current Progress
+        Save();
+    }
+
+    //Save/Load Functions
     public void Load()
     {
         exp = double.Parse(PlayerPrefs.GetString("exp", "0"));
@@ -132,46 +187,6 @@ public class IdleGame : MonoBehaviour
         PlayerPrefs.SetString("generation", generation.ToString());
         PlayerPrefs.SetString("generationTalents", generationTalents.ToString());
         PlayerPrefs.SetString("generationBoost", generationBoost.ToString());
-    }
-
-    public void Update()
-    {
-        nextGenerationTalentIncrease = (150 * System.Math.Sqrt(exp / 1e7));
-        nextGenerationIncreaseText.text = "Teach:\n+" + System.Math.Floor(nextGenerationTalentIncrease).ToString("F0") + " Talents";
-        generationText.text = "Generation: " + generation;
-        generationBoostText.text = generationBoost.ToString("F2") + "X Boost";
-        generationTalentText.text = "Talents: " + System.Math.Floor(generationTalents).ToString("F0");
-
-        expPerSec = (repeatMissionUpgrade1Level + (repeatMissionUpgrade2Power * repeatMissionUpgrade2Level)) * generationBoost;
-
-
-        if (questValue > 1000)
-        {
-            var sciNotation = ScientificNotation(questValue);
-            questText.text = "Quest: +" + sciNotation + " EXP";
-        }
-        else
-            questText.text = "Quest: +" + questValue.ToString("F2") + " EXP";
-
-        if (exp > 1000)
-        {
-            var sciNotation = ScientificNotation(exp);
-            expText.text = "EXP: " + sciNotation;
-        }
-        else
-            expText.text = "EXP: " + exp.ToString("F0");
-
-        if (expPerSec > 1000)
-        {
-            var sciNotation = ScientificNotation(expPerSec);
-            expPerSecText.text = sciNotation + " EXP/s";
-        }
-        else
-            expPerSecText.text = expPerSec.ToString("F2") + " EXP/s";
-
-        exp += expPerSec * Time.deltaTime;
-
-        Save();
     }
 
     //Buttons
@@ -254,13 +269,6 @@ public class IdleGame : MonoBehaviour
         }
     }
 
-    public string ScientificNotation(double Value)
-    {
-        var exponent = (System.Math.Floor(System.Math.Log10(System.Math.Abs(Value))));
-        var mantissa = (Value / System.Math.Pow(10, exponent));
-        return mantissa.ToString("F2") + "e" + exponent;
-    }
-
     public void Teach()
     {
         if(exp > 1000)
@@ -288,6 +296,30 @@ public class IdleGame : MonoBehaviour
             repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + repeatMissionUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
             questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + questUpgrade2Cost.ToString("F0") + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
             repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + repeatMissionUpgrade2Cost.ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
+        }
+    }
+
+    //Universal Functions
+    public string ScientificNotation(double Value)
+    {
+        var exponent = (System.Math.Floor(System.Math.Log10(System.Math.Abs(Value))));
+        var mantissa = (Value / System.Math.Pow(10, exponent));
+        return mantissa.ToString("F2") + "e" + exponent;
+    }
+
+    public void ProgressBar(Image bar, double current, double max)
+    {
+        if (current / max < 0.01)
+        {
+            bar.fillAmount = 0;
+        }
+        else if (current / max > 1)
+        {
+            bar.fillAmount = 1;
+        }
+        else
+        {
+            bar.fillAmount = (float)(current / max);
         }
     }
 }
