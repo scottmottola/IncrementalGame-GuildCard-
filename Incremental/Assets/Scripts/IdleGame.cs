@@ -9,6 +9,7 @@ public class IdleGame : MonoBehaviour
     public Text expPerSecText;
     public double exp;
     public double expPerSec;
+    public int buyState;
 
     //Quest
     public Text questText;
@@ -197,11 +198,11 @@ public class IdleGame : MonoBehaviour
 
     public void BuyQuestUpgrade1()
     {
-        if (exp >= questUpgrade1Cost)
+        if (buyState == 0 && exp >= questUpgrade1Cost)
         {
             questUpgrade1Level++;
             exp -= questUpgrade1Cost;
-            questUpgrade1Cost *= 1.07;
+            questUpgrade1Cost = 25 * System.Math.Pow(1.07, questUpgrade1Level);
             questValue += generationBoost;
 
             if (questUpgrade1Cost > 1000)
@@ -211,6 +212,27 @@ public class IdleGame : MonoBehaviour
             }
             else
                 questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + questUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
+        }
+        else if (buyState == 1)
+        {
+
+        }
+        else if (buyState == 2)
+        {
+            var b = 10;
+            var e = exp;
+            var r = 1.07;
+            var k = questUpgrade1Level;
+            var m = System.Math.Floor(System.Math.Log((e * (r - 1)) / (b * System.Math.Pow(r, k)) + 1, r));
+
+            var cost = b * ((System.Math.Pow(r, k) * (System.Math.Pow(r, m) - 1)) / (r - 1));
+
+            if(exp >= questUpgrade1Cost)
+            {
+                questUpgrade1Level += (int)m;
+                exp -= cost;
+                questValue += (m * generationBoost);
+            }
         }
     }
 
@@ -321,5 +343,20 @@ public class IdleGame : MonoBehaviour
         {
             bar.fillAmount = (float)(current / max);
         }
+    }
+
+    public void BuyMax()
+    {
+        buyState = 2;
+    }
+
+    public void BuyTen()
+    {
+        buyState = 1;
+    }
+
+    public void BuyOne()
+    {
+        buyState = 0;
     }
 }
