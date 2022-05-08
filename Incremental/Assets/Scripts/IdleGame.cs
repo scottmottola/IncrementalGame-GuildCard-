@@ -219,20 +219,7 @@ public class IdleGame : MonoBehaviour
         }
         else if (buyState == 2)
         {
-            var b = 10;
-            var e = exp;
-            var r = 1.07;
-            var k = questUpgrade1Level;
-            var m = System.Math.Floor(System.Math.Log((e * (r - 1)) / (b * System.Math.Pow(r, k)) + 1, r));
-
-            var cost = b * ((System.Math.Pow(r, k) * (System.Math.Pow(r, m) - 1)) / (r - 1));
-
-            if(exp >= questUpgrade1Cost)
-            {
-                questUpgrade1Level += (int)m;
-                exp -= cost;
-                questValue += (m * generationBoost);
-            }
+            BuyMax(10, );
         }
     }
 
@@ -321,6 +308,21 @@ public class IdleGame : MonoBehaviour
         }
     }
 
+    public void BuyMaxButton()
+    {
+        buyState = 2;
+    }
+
+    public void BuyTenButton()
+    {
+        buyState = 1;
+    }
+
+    public void BuyOneButton()
+    {
+        buyState = 0;
+    }
+
     //Universal Functions
     public string ScientificNotation(double Value)
     {
@@ -345,18 +347,21 @@ public class IdleGame : MonoBehaviour
         }
     }
 
-    public void BuyMax()
+    public void BuyMax(double baseCost)
     {
-        buyState = 2;
-    }
+        var baseCost = 10;
+        var e = exp;
+        var r = 1.07;
+        var k = questUpgrade1Level;
+        var m = System.Math.Floor(System.Math.Log((e * (r - 1)) / (baseCost * System.Math.Pow(r, k)) + 1, r));
 
-    public void BuyTen()
-    {
-        buyState = 1;
-    }
+        var cost = baseCost * ((System.Math.Pow(r, k) * (System.Math.Pow(r, m) - 1)) / (r - 1));
 
-    public void BuyOne()
-    {
-        buyState = 0;
+        if (exp >= questUpgrade1Cost)
+        {
+            questUpgrade1Level += (int)m;
+            exp -= cost;
+            questValue += (m * generationBoost);
+        }
     }
 }
