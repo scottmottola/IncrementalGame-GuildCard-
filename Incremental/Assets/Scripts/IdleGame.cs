@@ -198,47 +198,30 @@ public class IdleGame : MonoBehaviour
 
     public void BuyQuestUpgrade1()
     {
-        if (buyState == 0 && exp >= questUpgrade1Cost)
-        {
-            questUpgrade1Level++;
-            exp -= questUpgrade1Cost;
-            questUpgrade1Cost = 25 * System.Math.Pow(1.07, questUpgrade1Level);
-            questValue += generationBoost;
+        BuyState(25, 1.07, ref questUpgrade1Level, ref questValue);
 
-            if (questUpgrade1Cost > 1000)
-            {
-                var sciNotation = ScientificNotation(questUpgrade1Cost);
-                questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + sciNotation + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
-            }
-            else
-                questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + questUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
-        }
-        else if (buyState == 1)
+        var cost = 25 * System.Math.Pow(1.07, questUpgrade1Level);
+        if (questUpgrade1Cost > 1000)
         {
-
+            var sciNotation = ScientificNotation(cost);
+            questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + sciNotation + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
         }
-        else if (buyState == 2)
-        {
-            BuyMax(10, );
-        }
+        else
+            questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
     }
 
     public void BuyRepeatMissionUpgrade1()
     {
-        if (exp >= repeatMissionUpgrade1Cost)
-        {
-            repeatMissionUpgrade1Level++;
-            exp -= repeatMissionUpgrade1Cost;
-            repeatMissionUpgrade1Cost *= 1.15;
+        BuyState(100, 1.15, ref repeatMissionUpgrade1Level);
 
-            if (repeatMissionUpgrade1Cost > 1000)
-            {
-                var sciNotation = ScientificNotation(repeatMissionUpgrade1Cost);
-                repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + sciNotation + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
-            }
-            else
-                repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + repeatMissionUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
+        var cost = 100 * System.Math.Pow(1.15, repeatMissionUpgrade1Level);
+        if (cost > 1000)
+        {
+            var sciNotation = ScientificNotation(cost);
+            repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + sciNotation + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
         }
+        else
+            repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
     }
 
     public void BuyQuestUpgrade2()
@@ -347,21 +330,52 @@ public class IdleGame : MonoBehaviour
         }
     }
 
-    public void BuyMax(double baseCost)
+    public void BuyState(double baseCost, double rate, ref int level)
     {
-        var baseCost = 10;
-        var e = exp;
-        var r = 1.07;
-        var k = questUpgrade1Level;
-        var m = System.Math.Floor(System.Math.Log((e * (r - 1)) / (baseCost * System.Math.Pow(r, k)) + 1, r));
+        double value = 0;
+        BuyState(baseCost, rate, ref level, ref value);
+    }
 
-        var cost = baseCost * ((System.Math.Pow(r, k) * (System.Math.Pow(r, m) - 1)) / (r - 1));
+        public void BuyState(double baseCost, double rate, ref int level, ref double value)
+    {
+        switch(buyState)
+        {
+            case 1:
+                BuyOne(baseCost, rate, ref level, ref value);
+                break;
+            case 2:
+                BuyMax(baseCost, rate, ref level, ref value);
+                break;
+            default:
+                BuyOne(baseCost, rate, ref level, ref value);
+                break;
+        }
+    }
+
+    public void BuyOne(double baseCost, double rate, ref int level, ref double value)
+    {
+        var cost = baseCost * System.Math.Pow(rate, level);
+        if (exp >= cost)
+        {
+            level++;
+            exp -= cost;
+            value += generationBoost;
+        }
+    }
+
+    public void BuyMax(double baseCost, double rate, ref int level, ref double value)
+    {
+        var e = exp;
+        var k = level;
+        var m = System.Math.Floor(System.Math.Log((e * (rate - 1)) / (baseCost * System.Math.Pow(rate, k)) + 1, rate));
+
+        var cost = baseCost * ((System.Math.Pow(rate, k) * (System.Math.Pow(rate, m) - 1)) / (rate - 1));
 
         if (exp >= questUpgrade1Cost)
         {
-            questUpgrade1Level += (int)m;
+            level += (int)m;
             exp -= cost;
-            questValue += (m * generationBoost);
+            value += (m * generationBoost);
         }
     }
 }

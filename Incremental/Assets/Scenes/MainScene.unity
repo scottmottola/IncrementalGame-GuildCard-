@@ -1154,7 +1154,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1350563151}
         m_TargetAssemblyTypeName: IdleGame, Assembly-CSharp
-        m_MethodName: Teach
+        m_MethodName: BuyMaxButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2001,7 +2001,7 @@ GameObject:
   - component: {fileID: 1122191916}
   - component: {fileID: 1122191915}
   m_Layer: 5
-  m_Name: Buy Max 10
+  m_Name: Buy 10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2073,7 +2073,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1350563151}
         m_TargetAssemblyTypeName: IdleGame, Assembly-CSharp
-        m_MethodName: Teach
+        m_MethodName: BuyOneButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2382,6 +2382,7 @@ MonoBehaviour:
   expPerSecText: {fileID: 433343615}
   exp: 100
   expPerSec: 0
+  buyState: 0
   questText: {fileID: 802699063}
   questValue: 0
   questUpgrade1Text: {fileID: 527179955}
@@ -3429,7 +3430,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1350563151}
         m_TargetAssemblyTypeName: IdleGame, Assembly-CSharp
-        m_MethodName: Teach
+        m_MethodName: BuyOneButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
