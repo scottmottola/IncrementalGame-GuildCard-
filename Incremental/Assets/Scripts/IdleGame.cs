@@ -21,17 +21,13 @@ public class IdleGame : MonoBehaviour
     public Text questUpgrade2Text;
     public Text repeatMissionUpgrade2Text;
 
-    public double questUpgrade1Cost;
     public int questUpgrade1Level;
 
-    public double repeatMissionUpgrade1Cost;
     public int repeatMissionUpgrade1Level;
 
-    public double questUpgrade2Cost;
     public double questUpgrade2Power;
     public int questUpgrade2Level;
 
-    public double repeatMissionUpgrade2Cost;
     public double repeatMissionUpgrade2Power;
     public int repeatMissionUpgrade2Level;
 
@@ -62,38 +58,41 @@ public class IdleGame : MonoBehaviour
         Load();
 
         //Text Fields
-        if (questUpgrade1Cost > 1000)
+        var cost = 25 * System.Math.Pow(1.07, questUpgrade1Level);
+        if (cost > 1000)
         {
-            var sciNotation = ScientificNotation(questUpgrade1Cost);
+            var sciNotation = ScientificNotation(cost);
             questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + sciNotation + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
         }
         else
-            questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + questUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
+            questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
 
-        if (repeatMissionUpgrade1Cost > 1000)
+        cost = 100 * System.Math.Pow(1.15, repeatMissionUpgrade1Level);
+        if (cost > 1000)
         {
-            var sciNotation = ScientificNotation(repeatMissionUpgrade1Cost);
+            var sciNotation = ScientificNotation(cost);
             repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + sciNotation + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
         }
         else
-            repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + repeatMissionUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
+            repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
 
-
-        if (questUpgrade2Cost > 1000)
+        cost = 120 * System.Math.Pow(1.09, questUpgrade2Level);
+        if (cost > 1000)
         {
-            var sciNotation = ScientificNotation(questUpgrade2Cost);
+            var sciNotation = ScientificNotation(cost);
             questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + sciNotation + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
         }
         else
-            questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + questUpgrade2Cost.ToString("F0") + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
+            questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + cost.ToString("F0") + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
 
-        if (repeatMissionUpgrade2Cost > 1000)
+        cost = 550 * System.Math.Pow(1.17, repeatMissionUpgrade2Level);
+        if (cost > 1000)
         {
-            var sciNotation = ScientificNotation(repeatMissionUpgrade2Cost);
+            var sciNotation = ScientificNotation(cost);
             repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + sciNotation + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
         }
         else
-            repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + repeatMissionUpgrade2Cost.ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
+            repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + cost.ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
     }
 
     public void Update()
@@ -135,10 +134,10 @@ public class IdleGame : MonoBehaviour
         exp += expPerSec * Time.deltaTime;
 
         //Progress Bars
-        ProgressBar(questUpgrade1Bar, exp, questUpgrade1Cost);
-        ProgressBar(repeatMissionUpgrade1Bar, exp, repeatMissionUpgrade1Cost);
-        ProgressBar(questUpgrade2Bar, exp, questUpgrade2Cost);
-        ProgressBar(repeatMissionUpgrade2Bar, exp, repeatMissionUpgrade2Cost);
+        ProgressBar(questUpgrade1Bar, exp, Cost(25, 1.07, questUpgrade1Level));
+        ProgressBar(repeatMissionUpgrade1Bar, exp, Cost(100, 1.15, repeatMissionUpgrade1Level));
+        ProgressBar(questUpgrade2Bar, exp, Cost(120, 1.09, questUpgrade2Level));
+        ProgressBar(repeatMissionUpgrade2Bar, exp, Cost(550, 1.17, repeatMissionUpgrade2Level));
         ProgressBar(generationBar, exp, 1000);
 
         //Save Current Progress
@@ -150,10 +149,6 @@ public class IdleGame : MonoBehaviour
     {
         exp = double.Parse(PlayerPrefs.GetString("exp", "0"));
         questValue = double.Parse(PlayerPrefs.GetString("questValue", "1"));
-        questUpgrade1Cost = double.Parse(PlayerPrefs.GetString("questUpgrade1Cost", "25"));
-        repeatMissionUpgrade1Cost = double.Parse(PlayerPrefs.GetString("repeatMissionUpgrade1Cost", "100"));
-        questUpgrade2Cost = double.Parse(PlayerPrefs.GetString("questUpgrade2Cost", "120"));
-        repeatMissionUpgrade2Cost = double.Parse(PlayerPrefs.GetString("repeatMissionUpgrade2Cost", "550"));
 
         questUpgrade1Level = PlayerPrefs.GetInt("questUpgrade1Level", 0);
         questUpgrade2Level = PlayerPrefs.GetInt("questUpgrade2Level", 0);
@@ -172,10 +167,6 @@ public class IdleGame : MonoBehaviour
     {
         PlayerPrefs.SetString("exp", exp.ToString());
         PlayerPrefs.SetString("questValue", questValue.ToString());
-        PlayerPrefs.SetString("questUpgrade1Cost", questUpgrade1Cost.ToString());
-        PlayerPrefs.SetString("repeatMissionUpgrade1Cost", repeatMissionUpgrade1Cost.ToString());
-        PlayerPrefs.SetString("questUpgrade2Cost", questUpgrade2Cost.ToString());
-        PlayerPrefs.SetString("repeatMissionUpgrade2Cost", repeatMissionUpgrade2Cost.ToString());
 
         PlayerPrefs.SetInt("questUpgrade1Level", questUpgrade1Level);
         PlayerPrefs.SetInt("questUpgrade2Level", questUpgrade2Level);
@@ -201,7 +192,7 @@ public class IdleGame : MonoBehaviour
         BuyState(25, 1.07, ref questUpgrade1Level, ref questValue);
 
         var cost = 25 * System.Math.Pow(1.07, questUpgrade1Level);
-        if (questUpgrade1Cost > 1000)
+        if (cost > 1000)
         {
             var sciNotation = ScientificNotation(cost);
             questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + sciNotation + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
@@ -226,39 +217,30 @@ public class IdleGame : MonoBehaviour
 
     public void BuyQuestUpgrade2()
     {
-        if (exp >= questUpgrade2Cost)
-        {
-            questUpgrade2Level++;
-            exp -= questUpgrade2Cost;
-            questUpgrade2Cost *= 1.09;
-            questValue += (questUpgrade2Power * generationBoost);
+            BuyState(120, 1.09, ref questUpgrade2Level, ref questValue, questUpgrade2Power);
 
-            if (questUpgrade2Cost > 1000)
+            var cost = 120 * System.Math.Pow(1.09, questUpgrade2Level);
+            if (cost > 1000)
             {
-                var sciNotation = ScientificNotation(questUpgrade2Cost);
+                var sciNotation = ScientificNotation(cost);
                 questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + sciNotation + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
             }
             else
-                questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + questUpgrade2Cost.ToString("F0") + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
-        }
+                questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + cost.ToString("F0") + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
     }
 
     public void BuyRepeatMissionUpgrade2()
     {
-        if (exp >= repeatMissionUpgrade2Cost)
-        {
-            repeatMissionUpgrade2Level++;
-            exp -= repeatMissionUpgrade2Cost;
-            repeatMissionUpgrade2Cost *= 1.17;
+            BuyState(550, 1.17, ref repeatMissionUpgrade2Level);
 
-            if (repeatMissionUpgrade2Cost > 1000)
+            var cost = 550 * System.Math.Pow(1.17, repeatMissionUpgrade2Level);
+            if (cost > 1000)
             {
-                var sciNotation = ScientificNotation(repeatMissionUpgrade2Cost);
+                var sciNotation = ScientificNotation(cost);
                 repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + sciNotation + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
             }
             else
-                repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + repeatMissionUpgrade2Cost.ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
-        }
+                repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + cost.ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
     }
 
     public void Teach()
@@ -267,10 +249,6 @@ public class IdleGame : MonoBehaviour
         {
             exp = 0;
             questValue = 1;
-            questUpgrade1Cost = 25;
-            repeatMissionUpgrade1Cost = 100;
-            questUpgrade2Cost = 120;
-            repeatMissionUpgrade2Cost = 550;
 
             questUpgrade1Level = 0;
             questUpgrade2Level = 0;
@@ -284,10 +262,10 @@ public class IdleGame : MonoBehaviour
             generationTalents += nextGenerationTalentIncrease;
             generationBoost = ((generation + generationTalents) * 0.05) + 1;
 
-            questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + questUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
-            repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + repeatMissionUpgrade1Cost.ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
-            questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + questUpgrade2Cost.ToString("F0") + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
-            repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + repeatMissionUpgrade2Cost.ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
+            questUpgrade1Text.text = "Quest Upgrade 1\nCost: " + Cost(25, 1.07, questUpgrade1Level).ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade1Level;
+            repeatMissionUpgrade1Text.text = "Repeat Mission 1\nCost: " + Cost(100, 1.15, repeatMissionUpgrade1Level).ToString("F0") + " EXP\n+" + generationBoost.ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade1Level;
+            questUpgrade2Text.text = "Quest Upgrade 2\nCost: " + Cost(120, 1.09, questUpgrade2Level).ToString("F0") + " EXP\n+" + (questUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Quest\nLevel: " + questUpgrade2Level;
+            repeatMissionUpgrade2Text.text = "Repeat Mission 2\nCost: " + Cost(550, 1.17, repeatMissionUpgrade2Level).ToString("F0") + " EXP\n+" + (repeatMissionUpgrade2Power * generationBoost).ToString("F2") + " Exp Per Second\nLevel: " + repeatMissionUpgrade2Level;
         }
     }
 
@@ -336,34 +314,43 @@ public class IdleGame : MonoBehaviour
         BuyState(baseCost, rate, ref level, ref value);
     }
 
-        public void BuyState(double baseCost, double rate, ref int level, ref double value)
+    public void BuyState(double baseCost, double rate, ref int level, ref double value)
+    {
+        double power = 0;
+        BuyState(baseCost, rate, ref level, ref value, power);
+    }
+
+    public void BuyState(double baseCost, double rate, ref int level, ref double value, double power)
     {
         switch(buyState)
         {
             case 1:
-                BuyOne(baseCost, rate, ref level, ref value);
+                BuyOne(baseCost, rate, ref level, ref value, power);
                 break;
             case 2:
-                BuyMax(baseCost, rate, ref level, ref value);
+                BuyMax(baseCost, rate, ref level, ref value, power);
                 break;
             default:
-                BuyOne(baseCost, rate, ref level, ref value);
+                BuyOne(baseCost, rate, ref level, ref value, power);
                 break;
         }
     }
 
-    public void BuyOne(double baseCost, double rate, ref int level, ref double value)
+    public void BuyOne(double baseCost, double rate, ref int level, ref double value, double power)
     {
         var cost = baseCost * System.Math.Pow(rate, level);
         if (exp >= cost)
         {
             level++;
             exp -= cost;
-            value += generationBoost;
+            if (power != 0)
+                value += (power * generationBoost);
+            else
+                value += generationBoost;
         }
     }
 
-    public void BuyMax(double baseCost, double rate, ref int level, ref double value)
+    public void BuyMax(double baseCost, double rate, ref int level, ref double value, double power)
     {
         var e = exp;
         var k = level;
@@ -371,11 +358,19 @@ public class IdleGame : MonoBehaviour
 
         var cost = baseCost * ((System.Math.Pow(rate, k) * (System.Math.Pow(rate, m) - 1)) / (rate - 1));
 
-        if (exp >= questUpgrade1Cost)
+        if (exp >= cost)
         {
             level += (int)m;
             exp -= cost;
-            value += (m * generationBoost);
+            if (power != 0)
+                value += (m * (power * generationBoost));
+            else
+                value += (m * generationBoost);
         }
+    }
+
+    public double Cost(double initial, double rate, int level)
+    {
+        return initial * System.Math.Pow(rate, level);
     }
 }
